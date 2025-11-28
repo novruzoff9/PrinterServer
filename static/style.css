@@ -1,0 +1,246 @@
+/* Global */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #f0f2f5, #d9e1f2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Container */
+.container {
+    background: #fff;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+/* Heading */
+h2 {
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+/* File input */
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 2px dashed #6c63ff;
+    border-radius: 12px;
+    padding: 25px;
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+    color: #555;
+    font-size: 15px;
+    transition: 0.3s;
+    background: #fafafa;
+}
+
+.custom-file-upload:hover {
+    background: #f3f3ff;
+    border-color: #5850ec;
+}
+
+/* Button */
+button {
+    padding: 14px 0;
+    background: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 100%;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #5850ec;
+    transform: translateY(-2px);
+}
+
+/* Print options */
+.print-options {
+    margin: 25px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.count-control {
+    margin-bottom: 20px;
+}
+
+.count-control label,
+.color-control label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.count-control label{
+    margin-bottom: 10px;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.counter button {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #6c63ff;
+    background: white;
+    color: #6c63ff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter button:hover {
+    background: #6c63ff;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.counter input[type="number"] {
+    width: 100px;
+    height: 40px;
+    text-align: center;
+    border: 2px solid #6c63ff;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    outline: none;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.color-control {
+    margin-top: 15px;
+}
+
+.radio-group {
+    display: flex;
+    justify-content: center;
+    border: 2px solid #e9ecef;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 50%;
+    margin-bottom: 0;
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+    background: white;
+    border: 1px solid #e9ecef;
+}
+
+.radio-option:hover {
+    background: #f3f3ff;
+    border-color: #6c63ff;
+}
+
+.radio-option input[type="radio"] {
+    margin: 0;
+    accent-color: #6c63ff;
+    display: none;
+}
+
+.radio-option input[type="radio"]:checked + span {
+    color: #6c63ff;
+    font-weight: 600;
+}
+
+.radio-option span {
+    font-weight: 500;
+    color: #495057;
+    font-size: 14px;
+}
+
+/* Status */
+#status {
+    margin-top: 20px;
+    font-weight: 600;
+    color: #333;
+    padding: 12px;
+    border-radius: 8px;
+    min-height: 20px;
+}
+
+.success {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .container {
+        padding: 30px 20px;
+        border-radius: 12px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .custom-file-upload {
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 12px 0;
+    }
+}

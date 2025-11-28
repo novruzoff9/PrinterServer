@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Printer Service</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Çap üçün fayl yüklə</h2>
+
+        <form id="uploadForm" onsubmit="event.preventDefault(); sendFile();">
+            <label for="fileInput" class="custom-file-upload">
+                Faylı seçmək üçün kliklə
+            </label>
+            <input type="file" name="file" id="fileInput" required>
+
+            <div class="print-options">
+                <div class="count-control">
+                    <label>Çap sayı:</label>
+                    <div class="counter">
+                        <button type="button" onclick="decreaseCount()">-</button>
+                        <input type="number" id="printCount" value="1" min="1">
+                        <button type="button" onclick="increaseCount()">+</button>
+                    </div>
+                </div>
+
+                <div class="color-control">
+                    <label>Çap növü:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="colorMode" value="bw" checked>
+                            <span>Ağ-qara</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="colorMode" value="color">
+                            <span>Rəngli</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Çap et</button>
+        </form>
+
+        <p id="status"></p>
+    </div>
+
+    <script src="/static/main.js"></script>
+</body>
+
+</html>
