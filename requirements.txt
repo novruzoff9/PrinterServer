@@ -1,2 +1,3 @@
 flask>=2.0.0
 Pillow>=8.0.0
+pywin32>=227

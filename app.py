@@ -3,6 +3,8 @@ import os
 import subprocess
 import tempfile
 from PIL import Image
+import win32print
+import win32api
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -14,37 +16,66 @@ def is_image(filename):
     return ext.endswith(".jpg") or ext.endswith(".jpeg") or ext.endswith(".png")
 
 
-def convert_image_to_pdf(image_path):
+def convert_image_to_pdf(image_path, color_mode="bw"):
     pdf_path = image_path + ".pdf"
 
-    image = Image.open(image_path).convert("RGB")
-    image.save(pdf_path)
-
+    image = Image.open(image_path)
+    
+    # Rəng rejiminə görə şəkli hazırla
+    if color_mode == "bw":
+        # Ağ-qara çevirməsi
+        image = image.convert("L")  # Grayscale
+        image = image.convert("RGB")  # PDF üçün RGB lazımdır
+    else:
+        # Rəngli saxla
+        image = image.convert("RGB")
+    
+    image.save(pdf_path, "PDF", quality=95)
     return pdf_path
 
 
 def print_file(filepath, count=1, color_mode="bw"):
-    # Windows PowerShell ilə səssiz (popup-suz) print
-    for i in range(int(count)):
-        # Rəng rejimini PowerShell parametri ilə təyin edirik
-        if color_mode == "bw":
-            # Ağ-qara çap üçün
+    try:
+        # Default printer-i al
+        printer_name = win32print.GetDefaultPrinter()
+        
+        # Printer ayarlarını al
+        printer_handle = win32print.OpenPrinter(printer_name)
+        
+        for i in range(int(count)):
+            if color_mode == "bw":
+                # Ağ-qara çap üçün SumatraPDF istifadə edək
+                subprocess.run([
+                    "powershell",
+                    "-Command",
+                    f'& "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe" -print-to-default -print-settings "monochrome" -exit-when-done "{filepath}"'
+                ], shell=True, capture_output=True)
+                
+                # Əgər SumatraPDF yoxdursa, adi çap et
+                if subprocess.run(["where", "SumatraPDF.exe"], capture_output=True).returncode != 0:
+                    subprocess.run([
+                        "powershell",
+                        "-Command",
+                        f"Start-Process -FilePath '{filepath}' -Verb Print -WindowStyle Hidden"
+                    ], shell=True)
+            else:
+                # Rəngli çap
+                subprocess.run([
+                    "powershell",
+                    "-Command", 
+                    f"Start-Process -FilePath '{filepath}' -Verb Print -WindowStyle Hidden"
+                ], shell=True)
+        
+        win32print.ClosePrinter(printer_handle)
+        
+    except Exception as e:
+        # Fallback: Adi Windows çap
+        for i in range(int(count)):
             subprocess.run([
                 "powershell",
                 "-Command",
-                f"Start-Process -FilePath '{filepath}' -Verb Print -PassThru"
-            ],
-                shell=True
-            )
-        else:
-            # Rəngli çap üçün
-            subprocess.run([
-                "powershell",
-                "-Command",
-                f"Start-Process -FilePath '{filepath}' -Verb Print -PassThru"
-            ],
-                shell=True
-            )
+                f"Start-Process -FilePath '{filepath}' -Verb Print -WindowStyle Hidden"
+            ], shell=True)
 
 
 @app.route('/')
@@ -73,7 +104,7 @@ def upload():
     # Şəkildirsə PDF-ə çevir
     if is_image(file.filename):
         try:
-            pdf_path = convert_image_to_pdf(filepath)
+            pdf_path = convert_image_to_pdf(filepath, color_mode)
             filepath = pdf_path  # Artıq çap ediləcək fayl PDF oldu
         except Exception as e:
             return f"Şəkli PDF-ə çevirmək mümkün olmadı: {str(e)}", 500
