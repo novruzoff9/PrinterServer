@@ -7,10 +7,10 @@
 ### ✨ Əsas Funksiyalar
 - 📄 **PDF fayllarının çapı** - Birbaşa PDF çapı
 - 🖼️ **Şəkil fayllarının çapı** - JPG, JPEG, PNG fayllar avtomatik PDF-ə çevrilir
-- 🔢 **Çap sayının seçilməsi** - 1-dən istənilən sayda nüsxə çap etmək
+- 🔢 **Çap sayının seçilməsi** - istənilən sayda nüsxə çap etmək
 - 🎨 **Rəng rejimi seçimi** - Ağ-qara və ya rəngli çap
 - 📱 **Responsive dizayn** - Bütün cihazlarda rahat istifadə
-- ⚡ **Sürətli yükləmə** - Fayllar avtomatik temp qovluğuna yüklənir
+- ⚡ **Sürətli yükləmə** - Fayllar avtomatik `jobs/` qovluğuna yüklənir
 
 ### 🎯 İstifadə Sahələri
 - **Ofis mühiti** - Sənədlərin sürətli çapı
@@ -29,7 +29,7 @@ PrinterServer/
 ├── static/
 │   ├── style.css       # Stilləşdirmə
 │   └── main.js         # JavaScript funksiyaları
-├── jobs/               # Çap tarixçəsi (mətn faylları)
+├── jobs/               # Çap tarixçəsi
 ├── requirements.txt    # Python dependencies
 └── README.md          # Bu sənəd
 ```
@@ -39,7 +39,7 @@ PrinterServer/
 **Backend (Flask):**
 - `app.py` - Əsas server tətbiqi
 - Port: `5002` (bütün IP ünvanlarında)
-- Fayllar Windows temp qovluğuna yüklənir
+- Fayllar `jobs/` qovluğunda saxlanılır
 - PowerShell ilə səssiz çap əmrləri
 
 **Frontend:**
@@ -52,7 +52,7 @@ PrinterServer/
 ### Python Dependencies
 
 ```bash
-pip install flask pillow
+pip install flask pillow pywin32
 ```
 
 **Ətraflı kitabxana məlumatları:**
@@ -60,14 +60,11 @@ pip install flask pillow
 | Kitabxana | Versiya | Məqsəd |
 |-----------|---------|---------|
 | `Flask` | ≥2.0.0 | Web server və routing |
-| `Pillow (PIL)` | ≥8.0.0 | Şəkil fayllarını PDF-ə çevirmək |
-
+| `Pillow (PIL)` | ≥8.0.0 | Şəkil fayllarını PDF-ə çevirmək || `pywin32` | ≥227 | Windows printer API dəstəyi |
 ### Sistem Tələbləri
 
 - **Python:** 3.7+ (tövsiyə: 3.9+)
 - **OS:** Windows 10/11 (PowerShell dəstəyi)
-- **RAM:** Minimum 512MB (tövsiyə: 1GB+)
-- **Disk:** ~50MB boş yer
 - **Printer:** Windows printer driver quraşdırılmış
 
 ## 🚀 Quraşdırma və İstifadə
@@ -85,7 +82,7 @@ pip install -r requirements.txt
 
 > **Qeyd:** Manual quraşdırmaq istəsəniz:
 ```bash
-pip install flask pillow
+pip install flask pillow pywin32
 ```
 
 ### 3️⃣ Serveri İşə Salın
@@ -109,7 +106,7 @@ http://[kompüterin-ip-adresi]:5002
 
 1. **Fayl seçin** 📁
    - "Faylı seçmək üçün kliklə" düyməsinə basın
-   - PDF, JPG, JPEG, PNG formatlarını seçə bilərsiniz
+   - PDF, JPG, JPEG, PNG və s. formatlarını seçə bilərsiniz
 
 2. **Çap sayını təyin edin** 🔢
    - `+` və `-` düymələri ilə sayı dəyişin
@@ -117,7 +114,7 @@ http://[kompüterin-ip-adresi]:5002
    - Default: 1 ədəd
 
 3. **Rəng rejimini seçin** 🎨
-   - **Ağ-qara:** Qənaət rejimi (default)
+   - **Ağ-qara:** Ağ-qara (default)
    - **Rəngli:** Tam rəngli çap
 
 4. **Çap edin** 🖨️
@@ -184,7 +181,7 @@ python -m venv venv
 venv\Scripts\activate
 
 # Dependencies quraşdırın
-pip install flask pillow
+pip install flask pillow pywin32
 
 # Development server işə salın
 python app.py
@@ -194,7 +191,7 @@ python app.py
 
 **Problemlərinizi paylaşın:**
 - GitHub Issues açın
-- Email: [yaghmur.novruzlu@gmail.com](mailto:yaghmur.novruzlu@gmail.com)
+- Email: yaghmur.novruzlu@gmail.com
 - Linkedin: [Yaghmur Novruzlu](https://www.linkedin.com/in/yaghmur-novruzlu-50779a21a/)
 
 ---
