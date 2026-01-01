@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request, send_from_directory
 import os
 import subprocess
-import tempfile
 from PIL import Image
 import win32print
-import win32api
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
-UPLOAD_FOLDER = tempfile.gettempdir()
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'jobs')
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 
 def is_image(filename):
@@ -18,16 +19,11 @@ def is_image(filename):
 
 def convert_image_to_pdf(image_path, color_mode="bw"):
     pdf_path = image_path + ".pdf"
-
     image = Image.open(image_path)
-    
-    # Rəng rejiminə görə şəkli hazırla
     if color_mode == "bw":
-        # Ağ-qara çevirməsi
-        image = image.convert("L")  # Grayscale
-        image = image.convert("RGB")  # PDF üçün RGB lazımdır
+        image = image.convert("L")
+        image = image.convert("RGB")
     else:
-        # Rəngli saxla
         image = image.convert("RGB")
     
     image.save(pdf_path, "PDF", quality=95)
@@ -36,22 +32,16 @@ def convert_image_to_pdf(image_path, color_mode="bw"):
 
 def print_file(filepath, count=1, color_mode="bw"):
     try:
-        # Default printer-i al
         printer_name = win32print.GetDefaultPrinter()
-        
-        # Printer ayarlarını al
         printer_handle = win32print.OpenPrinter(printer_name)
-        
-        for i in range(int(count)):
+        for _ in range(int(count)):
             if color_mode == "bw":
-                # Ağ-qara çap üçün SumatraPDF istifadə edək
                 subprocess.run([
                     "powershell",
                     "-Command",
                     f'& "C:\\Program Files\\SumatraPDF\\SumatraPDF.exe" -print-to-default -print-settings "monochrome" -exit-when-done "{filepath}"'
                 ], shell=True, capture_output=True)
                 
-                # Əgər SumatraPDF yoxdursa, adi çap et
                 if subprocess.run(["where", "SumatraPDF.exe"], capture_output=True).returncode != 0:
                     subprocess.run([
                         "powershell",
@@ -59,7 +49,6 @@ def print_file(filepath, count=1, color_mode="bw"):
                         f"Start-Process -FilePath '{filepath}' -Verb Print -WindowStyle Hidden"
                     ], shell=True)
             else:
-                # Rəngli çap
                 subprocess.run([
                     "powershell",
                     "-Command", 
@@ -69,8 +58,7 @@ def print_file(filepath, count=1, color_mode="bw"):
         win32print.ClosePrinter(printer_handle)
         
     except Exception as e:
-        # Fallback: Adi Windows çap
-        for i in range(int(count)):
+        for _ in range(int(count)):
             subprocess.run([
                 "powershell",
                 "-Command",
@@ -88,34 +76,49 @@ def upload():
     if 'file' not in request.files:
         return "Fayl tapılmadı", 400
 
-    file = request.files['file']
+    files = request.files.getlist('file')
 
-    if file.filename == '':
+    if not files or files[0].filename == '':
         return "Fayl seçilməyib", 400
 
-    # Çap parametrlərini al
     print_count = request.form.get('count', '1')
     color_mode = request.form.get('color', 'bw')
 
-    # Faylı temp qovluğuna yaz
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(filepath)
+    processed_files = []
+    errors = []
 
-    # Şəkildirsə PDF-ə çevir
-    if is_image(file.filename):
+    for file in files:
+        if file.filename == '':
+            continue
+
         try:
-            pdf_path = convert_image_to_pdf(filepath, color_mode)
-            filepath = pdf_path  # Artıq çap ediləcək fayl PDF oldu
-        except Exception as e:
-            return f"Şəkli PDF-ə çevirmək mümkün olmadı: {str(e)}", 500
+            filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+            file.save(filepath)
 
-    # Çap əmri göndər
-    try:
-        print_file(filepath, print_count, color_mode)
-        color_text = "ağ-qara" if color_mode == "bw" else "rəngli"
-        return f"Fayl {print_count} ədəd {color_text} çap edildi", 200
-    except Exception as e:
-        return f"Çap zamanı xəta baş verdi: {str(e)}", 500
+            if is_image(file.filename):
+                try:
+                    pdf_path = convert_image_to_pdf(filepath, color_mode)
+                    filepath = pdf_path
+                except Exception as e:
+                    errors.append(f"{file.filename}: PDF çevirmə xətası - {str(e)}")
+                    continue
+
+            try:
+                print_file(filepath, print_count, color_mode)
+                processed_files.append(file.filename)
+            except Exception as e:
+                errors.append(f"{file.filename}: Çap xətası - {str(e)}")
+        except Exception as e:
+            errors.append(f"{file.filename}: Ümumi xəta - {str(e)}")
+
+    color_text = "ağ-qara" if color_mode == "bw" else "rəngli"
+    
+    if processed_files and not errors:
+        return f"{len(processed_files)} fayl {print_count} ədəd {color_text} çap edildi: {', '.join(processed_files)}", 200
+    elif processed_files and errors:
+        return f"{len(processed_files)} fayl çap edildi. Xətalar: {'; '.join(errors)}", 207
+    else:
+        return f"Çap zamanı xətalar baş verdi: {'; '.join(errors)}", 500
 
 
 @app.route('/static/<path:path>')

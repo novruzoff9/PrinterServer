@@ -17,18 +17,23 @@ function sendFile() {
     const colorMode = document.querySelector('input[name="colorMode"]:checked').value;
     const statusEl = document.getElementById('status');
 
-    if (!fileInput.files[0]) {
+    if (!fileInput.files || fileInput.files.length === 0) {
         statusEl.textContent = 'Zəhmət olmasa fayl seçin!';
         statusEl.className = 'error';
         return;
     }
 
     const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    
+    for (let i = 0; i < fileInput.files.length; i++) {
+        formData.append('file', fileInput.files[i]);
+    }
+    
     formData.append('count', printCount);
     formData.append('color', colorMode);
 
-    statusEl.textContent = 'Fayl yüklənir və çap edilir...';
+    const fileCount = fileInput.files.length;
+    statusEl.textContent = `${fileCount} fayl yüklənir və çap edilir...`;
     statusEl.className = '';
 
     fetch('/upload', {
@@ -39,11 +44,10 @@ function sendFile() {
     .then(data => {
         statusEl.textContent = data;
         statusEl.className = 'success';
-        // Reset form after successful upload
         fileInput.value = '';
         document.getElementById('printCount').value = '1';
         document.querySelector('input[name="colorMode"][value="bw"]').checked = true;
-        document.querySelector('.custom-file-upload').textContent = 'Faylı seçmək üçün kliklə';
+        document.querySelector('.custom-file-upload').textContent = 'Faylları seçmək üçün kliklə';
     })
     .catch(error => {
         statusEl.textContent = 'Xəta baş verdi: ' + error;
@@ -51,16 +55,19 @@ function sendFile() {
     });
 }
 
-// File input change event to show selected file name
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const label = document.querySelector('.custom-file-upload');
     
     fileInput.addEventListener('change', function() {
-        if (this.files[0]) {
-            label.textContent = 'Seçildi: ' + this.files[0].name;
+        if (this.files && this.files.length > 0) {
+            if (this.files.length === 1) {
+                label.textContent = 'Seçildi: ' + this.files[0].name;
+            } else {
+                label.textContent = `Seçildi: ${this.files.length} fayl`;
+            }
         } else {
-            label.textContent = 'Faylı seçmək üçün kliklə';
+            label.textContent = 'Faylları seçmək üçün kliklə';
         }
     });
 });
