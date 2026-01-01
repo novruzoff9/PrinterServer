@@ -194,9 +194,9 @@ python app.py
 
 **Problemlərinizi paylaşın:**
 - GitHub Issues açın
-- Email: [yagmurnov2@gmail.com]
-- Telegram: [@novruzoff9]
+- Email: [yaghmur.novruzlu@gmail.com](mailto:yaghmur.novruzlu@gmail.com)
+- Linkedin: [Yaghmur Novruzlu](https://www.linkedin.com/in/yaghmur-novruzlu-50779a21a/)
 
 ---
 
-**⭐ Projekt bəyəndinizsə, star verməyi unutmayın!**
+**⭐ Proyekti bəyəndinizsə, star verməyi unutmayın!**
